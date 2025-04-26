@@ -1,95 +1,133 @@
-# Control of a Furuta Pendulum - Final Project
+# Trajectory Planning and Kinematic Analysis for an RRPRRR Robot
 
-This project was developed as part of my undergraduate final project at the Technion, in collaboration with my partner Igal Vornov and under the supervision of Prof. Leonid Mirkin.
+This project focuses on trajectory planning and kinematic analysis for a 6-DOF RRPRRR robot. It was developed as part of a robotics course project at the Technion.
 
-The system under study consists of a brushed DC motor actuator that drives a rotating arm with a pendulum attached to its end. The project's objectives and stages are as follows:
-
-<p align="center">
-  <img src="Pictures/System_Pic.png" width="300">
-  <br><sub>Furuta Pendulum experimental system</sub>
-</p>
-
-<p align="center">
-  <img src="Pictures/Mechanical_System.png" width="400">
-  <br><sub>Mechanical model of the arm-pendulum system</sub>
-</p>
+The project's main objectives and stages are as follows:
 
 ---
 
 ## Project Overview
 
-- **Full System Modeling:** 
-  - Modeling using Lagrangian equations.
-  - Modeling of the brushed DC motor.
+- **Forward Kinematics (FK):**
+  - Computed the position and orientation of the robot's end-effector based on the joint variables.
+
+- **Inverse Kinematics (IK):**
+  - Solved for the required joint configurations given desired end-effector poses.
   
-- **System Linearization:**
-  - Linearizing the system around the lower and upper equilibrium points.
+  <p align="center">
+    <img src="Pictures/print_elbows_group_1.png" width="400">
+    <br>
+    <sub>Inverse Kinematics - Solution Option 1</sub>
+  </p>
+  
+  <p align="center">
+    <img src="Pictures/print_elbows_group_2.png" width="400">
+    <br>
+    <sub>Inverse Kinematics - Solution Option 2</sub>
+  </p>
 
-- **Controller Design:**
-  - Designing various controllers to achieve multiple tasks.
-  - Experimenting with loop-shaping control and different optimization techniques.
+  - Chosen solution: **elbows = [1, 1, 1]**
 
+- **Jacobian Matrix Computation:**
+  - Derived the full Jacobian matrix of the robot relative to both the ground frame and the climbing (moving) frame.
+
+- **Trajectory Planning and Task Execution:**
+  - Designed and analyzed robot trajectories for three types of motion profiles:
+    - **Constant Velocity Trajectory (Type 1)**
+    - **Trapezoidal Velocity Trajectory (Type 2)**
+    - **Polynomial (Smooth) Velocity Trajectory (Type 3)**
+
+### Motion Planning Results
+
+**Trajectory Type 1 - Constant Velocity**
 <p align="center">
-  <img src="Pictures/BlockDiagram.JPG" width="500">
-  <br><sub>Block diagram of the overall control system</sub>
+  <img src="Pictures/Position_Trajectory_Type_1.png" width="450">
+  <br>
+  <img src="Pictures/Velocity_Trajectory_Type_1.png" width="450">
+  <br>
+  <img src="Pictures/Acceleration_Trajectory_Type_1.png" width="450">
 </p>
+
+**Trajectory Type 2 - Trapezoidal Velocity**
+<p align="center">
+  <img src="Pictures/Position_Trajectory_Type_2.png" width="450">
+  <br>
+  <img src="Pictures/Velocity_Trajectory_Type_2.png" width="450">
+  <br>
+  <img src="Pictures/Acceleration_Trajectory_Type_2.png" width="450">
+</p>
+
+**Trajectory Type 3 - Polynomial Velocity**
+<p align="center">
+  <img src="Pictures/Position_Trajectory_Type_3.png" width="450">
+  <br>
+  <img src="Pictures/Velocity_Trajectory_Type_3.png" width="450">
+  <br>
+  <img src="Pictures/Acceleration_Trajectory_Type_3.png" width="450">
+</p>
+
+- **Performance Analysis:**
+  - Analyzed the execution of each trajectory type through:
+    - Graphs showing joint motions, velocities, and accelerations.
+    - Robot motion simulations using MATLAB, including video animations.
 
 ---
 
-## Current Progress
+## Methodology
 
-### 1. Tracking Control for the Arm Angle
-- Initially implemented a simple gain-based tracking controller, which functioned but showed limited performance.
-- Improved performance by designing a loop-shaped tracking controller. However, saturation issues (nonlinear behavior) appeared.
+1. **Kinematic Modeling:**
+   - Defined axis systems for the RRPRRR robot.
+   - Implemented symbolic FK and IK solutions.
 
-### 2. Bang-Bang Reference Signal
-- Instead of a smoothed step input, we designed an optimal bang-bang reference signal, resulting in a bang-bang control voltage within specified limits.
+2. **Jacobian Analysis:**
+   - Computed the Jacobian matrix analytically.
+   - Examined the velocity relationships and singularities for different configurations.
 
-### 3. Feedforward Control (2DOF)
-- Added feedforward control to improve tracking, reducing overshoot (OS). However, the arm still oscillated at the pendulum's natural frequency.
-- To address this, we introduced a damping controller.
+3. **Trajectory Generation:**
+   - Programmed trajectories using different velocity profiles:
+     - Constant: simple, direct motion but with discontinuities at start/stop.
+     - Trapezoidal: smoothed acceleration/deceleration phases.
+     - Polynomial: continuous and smooth derivatives up to higher orders.
 
-### 4. Cascade Control with Damping
-- Designed a damping controller layered on top of the tracking controller to suppress pendulum oscillations during arm tracking.
-- This cascade structure slightly degraded the tracking controller's performance but overall led to acceptable steady target acquisition in laboratory tests.
-
-<p align="center">
-  <img src="Pictures/ControlScheme_Tracking1DOFAndDamping.png" width="500">
-  <br><sub>Control scheme: Tracking controller combined with damping controller</sub>
-</p>
-
-### 5. LQG-Based Damping Controller
-- Further improved damping by designing a controller based on an LQG (Linear-Quadratic-Gaussian) optimization problem with defined weighting TF.
-- Resulted in a more complex but smoother continuous damping controller with improved suppression performance.
-
-### 6. Switched (Intermittent) Control Implementation
-- We are now converting the continuous control into a switched control scheme.
-- This involves decomposing the damping controller back into an observer and a state feedback controller, sampling them independently, and using a sample-and-hold structure for the system's state vector.
-
-<p align="center">
-  <img src="Pictures/Lab_Simulink.png" width="500">
-  <br><sub>Control scheme: Simulink Control scheme used in Lab, with encoders inputs and voltage output</sub>
-</p>
+4. **Simulation and Visualization:**
+   - Created MATLAB scripts to simulate robot motion along the trajectories.
+   - Plotted joint trajectories (position, velocity, acceleration).
+   - Recorded simulation videos illustrating the robot's task execution.
 
 ---
 
-## Future Plans
+## Simulation Videos
 
-- Apply the same methods developed for arm tracking around the lower equilibrium to:
-  - Stabilize the pendulum in the upright position.
-  - Implement a swing-up controller to move the pendulum from the downward to the upward position.
+You can watch the robot's movements for the different trajectory types below:
+
+- [▶ Robot Motion - Constant Velocity (Type 1)](Videos/robot_motion_type1.mp4)
+- [▶ Robot Motion - Trapezoidal Velocity (Type 2)](Videos/robot_motion_type2.mp4)
+- [▶ Robot Motion - Polynomial Velocity (Type 3)](Videos/robot_motion_type3.mp4)
 
 ---
 
 ## Repository Contents
 
-- `project_v1.pdf` — Full project description and documentation.
+- `FK_IK_Solutions/` — Scripts for solving Forward and Inverse Kinematics.
+- `Jacobian_Analysis/` — Scripts for deriving and analyzing the Jacobian.
+- `TrajectoryPlanning/` — Scripts for generating and executing different trajectory types.
+- `Simulations/` — MATLAB animations and plots of robot motion.
+- `Pictures/` — Figures used for documentation and analysis.
+- `Videos/` — Recorded robot simulation videos.
+
+---
+
+## Tools Used
+
+- MATLAB (Symbolic Math Toolbox, Robotics Toolbox)
+- Graph plotting and video creation within MATLAB environment
 
 ---
 
 ## Acknowledgments
 
-- Supervisor: **Prof. Leonid Mirkin**
-- Project Partner: **Igal Vornov**
+- Project conducted at the Technion - Israel Institute of Technology.
+- Special thanks to course instructors and teaching assistants for their guidance.
+- Project Partner - Igal Vornov
 
 ---
