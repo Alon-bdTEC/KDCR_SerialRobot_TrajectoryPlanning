@@ -104,6 +104,9 @@ You can watch the robot's movements for the different trajectory types below:
 - [▶ Robot Motion - Trapezoidal Velocity (Type 2)](Videos/robot_motion_type2.mp4)
 - [▶ Robot Motion - Polynomial Velocity (Type 3)](Videos/robot_motion_type3.mp4)
 
+Link to Video on YouTube:
+https://youtube.com/shorts/WpSZkHUh3VQ?feature=share
+
 ---
 
 ## Repository Contents
